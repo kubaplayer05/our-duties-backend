@@ -5,6 +5,7 @@ import cors from "cors"
 
 import userRoute from "./routes/userRoute.js"
 import groupsRoute from "./routes/groupsRoute.js"
+import {authMiddleware} from "./middlewares/authMiddleware.js";
 
 const port = process.env.PORT
 
@@ -14,6 +15,9 @@ app.use(cors())
 app.use(express.json())
 
 app.use("/api/user", userRoute)
+
+app.use(authMiddleware)
+
 app.use("/api/groups", groupsRoute)
 
 app.listen(port, () => {

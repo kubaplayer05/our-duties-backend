@@ -8,22 +8,38 @@ datasource db {
 }
 
 model User {
-    id       String  @id @default(uuid())
-    name     String  @unique
-    email    String  @unique
-    password String
-    groups   Group[]
+    id            String  @id @default(uuid())
+    name          String  @unique
+    email         String  @unique
+    password      String
+    groups        Group[]
+    createdGroups Group[] @relation("createdGroups")
+    duties        Duty[]
 }
 
 model Group {
-    id    String @id @default(uuid())
-    name  String
-    users User[]
+    id        String @id @default(uuid())
+    name      String
+    users     User[]
+    duties    Duty[]
+    createdBy User   @relation("createdGroups", fields: [ownerId], references: [id])
+    ownerId   String
 }
 
 model Duty {
-    id       String @id @default(uuid())
-    name     String
-    group_id Int
-    user_id  Int
+    id         String   @id @default(uuid())
+    name       String
+    Group      Group    @relation(fields: [groupId], references: [id])
+    groupId    String
+    priority   Priority @default(MEDIUM)
+    createdAt  DateTime @default(now())
+    finishDate DateTime
+    user       User     @relation(fields: [userId], references: [id])
+    userId     String
+}
+
+enum Priority {
+    LOW
+    MEDIUM
+    HIGH
 }
