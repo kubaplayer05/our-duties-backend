@@ -1,9 +1,11 @@
-import express from "express"
+import express from "express";
+import {getUserGroups, createGroup, deleteGroup, joinGroup} from "../controllers/groupController.js";
 
 const router = express.Router()
 
-router.get("/", (req, res) => {
-    res.status(200).json({msg: "get user groups"})
-})
+router.get("/", getUserGroups)
+router.get("/delete", deleteGroup)
+router.post("/create", createGroup)
+router.post("/join", joinGroup)
 
 export default router
