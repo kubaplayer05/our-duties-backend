@@ -1,6 +1,7 @@
 import {PrismaClient} from '@prisma/client'
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
+import {verifyPassword} from "../utils/verify.js";
 
 const prisma = new PrismaClient()
 
@@ -30,6 +31,14 @@ export const signup = async (req, res) => {
     if (dataInUse) {
         return res.status(400).json({
             error: "Name and Email must be unique"
+        })
+    }
+
+    const passwordCheck = verifyPassword(password)
+
+    if (!passwordCheck) {
+        res.status(400).json({
+            error: "Password not strong enough"
         })
     }
 
