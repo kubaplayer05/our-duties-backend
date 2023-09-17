@@ -22,13 +22,14 @@ export const authMiddleware = async (req, res, next) => {
         })
 
         if (!user) {
-            throw Error("Wrong authorization token")
+            res.status(401).json({
+                error: "Wrong authorization token"
+            })
         }
 
         req.user = user
         next()
     } catch (err) {
-        console.error(err)
-        return res.status(401).json({error: "Request is not authorized"})
+        res.status(401).json({error: "Request is not authorized"})
     }
 }

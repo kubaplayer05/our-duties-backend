@@ -28,7 +28,6 @@ export const getUserGroups = async (req, res) => {
         })
 
     } catch (err) {
-        console.error(err)
         res.status(400).json({
             error: err.message
         })
@@ -58,12 +57,11 @@ export const createGroup = async (req, res) => {
             }
         })
 
-        res.status(200).json({
+        res.status(201).json({
             group
         })
 
     } catch (err) {
-        console.error(err)
         res.status(400).json({
             error: err.message
         })
@@ -73,7 +71,6 @@ export const createGroup = async (req, res) => {
 export const deleteGroup = async (req, res) => {
 
     try {
-
         await prisma.group.deleteMany()
 
         res.status(200).json({
@@ -107,7 +104,9 @@ export const joinGroup = async (req, res) => {
         const passwordCheck = await bcrypt.compare(password, hash)
 
         if (!passwordCheck) {
-            throw Error("Wrong password")
+            res.status(400).json({
+                error: "Wrong password"
+            })
         }
 
 
@@ -144,7 +143,6 @@ export const joinGroup = async (req, res) => {
         })
 
     } catch (err) {
-        console.error(err)
         res.status(400).json({
             error: err.message
         })
