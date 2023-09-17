@@ -42,28 +42,39 @@ export const signup = async (req, res) => {
         })
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
+    try {
 
-    const user = await prisma.user.create({
-        data: {
-            email: email,
-            name: name,
-            password: hash
+        const salt = await bcrypt.genSalt(10);
+        const hash = await bcrypt.hash(password, salt);
+
+        const user = await prisma.user.create({
+            data: {
+                email: email,
+                name: name,
+                password: hash
+            }
+        })
+
+        if (!user) {
+            return res.status(400).json({error: "Could not create user"})
         }
-    })
 
-    if (!user) {
-        return res.status(400).json({error: "Could not create user"})
+        const token = createToken(user.id)
+
+        res.cookie("token", token, {
+            httpOnly: true,
+        })
+
+        res.status(200).json({
+            email,
+            name,
+        })
+
+    } catch (err) {
+        res.status(400).json({
+            error: err.message
+        })
     }
-
-    const token = createToken(user.id)
-
-    res.status(200).json({
-        email,
-        name,
-        token
-    })
 }
 
 export const login = async (req, res) => {
@@ -79,7 +90,9 @@ export const login = async (req, res) => {
         })
 
         if (!user) {
-            throw Error("Wrong email")
+            res.status(400).json({
+                error: "Wrong email!"
+            })
         }
 
         const {password: hash, name, id} = user
@@ -87,15 +100,20 @@ export const login = async (req, res) => {
         const check = await bcrypt.compare(password, hash)
 
         if (!check) {
-            throw Error("Wrong password")
+            res.status(400).json({
+                error: "Wrong password!"
+            })
         }
 
         const token = createToken(id)
 
+        res.cookie("token", token, {
+            httpOnly: true,
+        })
+
         res.status(200).json({
             email,
             name,
-            token
         })
 
     } catch (err) {
