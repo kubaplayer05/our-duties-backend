@@ -36,7 +36,7 @@ export const signup = async (req, res) => {
 
     const passwordCheck = verifyPassword(password)
 
-    if (!passwordCheck) {fireturn res.status(400).json({
+    if (!passwordCheck) {return res.status(400).json({
             error: "Password not strong enough"
         })
     }
