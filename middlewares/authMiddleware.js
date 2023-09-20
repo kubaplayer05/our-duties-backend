@@ -5,6 +5,7 @@ const prisma = new PrismaClient()
 
 export const authMiddleware = async (req, res, next) => {
 
+    /*
     const {authorization} = req.headers
 
     if (!authorization) {
@@ -12,8 +13,11 @@ export const authMiddleware = async (req, res, next) => {
     }
 
     const token = authorization.split(" ")[1]
+     */
 
     try {
+        const {token} = req.cookies
+
         const {id} = jwt.verify(token, process.env.SECRET)
         const user = await prisma.user.findUnique({
             where: {

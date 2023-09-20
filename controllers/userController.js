@@ -36,8 +36,7 @@ export const signup = async (req, res) => {
 
     const passwordCheck = verifyPassword(password)
 
-    if (!passwordCheck) {
-        res.status(400).json({
+    if (!passwordCheck) {fireturn res.status(400).json({
             error: "Password not strong enough"
         })
     }
@@ -63,6 +62,12 @@ export const signup = async (req, res) => {
 
         res.cookie("token", token, {
             httpOnly: true,
+            maxAge: 360000
+        })
+
+        res.cookie("user", JSON.stringify({email, name}), {
+            maxAge: 360000,
+            httpOnly: false
         })
 
         res.status(200).json({
@@ -82,7 +87,6 @@ export const login = async (req, res) => {
     const {email, password} = req.body
 
     try {
-
         const user = await prisma.user.findUnique({
             where: {
                 email: email
@@ -90,7 +94,7 @@ export const login = async (req, res) => {
         })
 
         if (!user) {
-            res.status(400).json({
+            return res.status(400).json({
                 error: "Wrong email!"
             })
         }
@@ -100,7 +104,7 @@ export const login = async (req, res) => {
         const check = await bcrypt.compare(password, hash)
 
         if (!check) {
-            res.status(400).json({
+            return res.status(400).json({
                 error: "Wrong password!"
             })
         }
@@ -109,6 +113,12 @@ export const login = async (req, res) => {
 
         res.cookie("token", token, {
             httpOnly: true,
+            maxAge: 360000,
+        })
+
+        res.cookie("user", JSON.stringify({email, name}), {
+            maxAge: 360000,
+            httpOnly: false
         })
 
         res.status(200).json({
