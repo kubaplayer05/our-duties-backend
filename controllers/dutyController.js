@@ -2,6 +2,30 @@ import {PrismaClient} from '@prisma/client'
 
 const prisma = new PrismaClient()
 
+export const getUserDuties = async (req, res) => {
+
+    const {user} = req
+
+    try {
+
+        const duties = await prisma.duty.findMany({
+            where: {
+                userId: user.id
+            }
+        })
+
+        res.status(200).json({
+            duties
+        })
+
+
+    } catch (err) {
+        res.status(400).json({
+            error: err.message
+        })
+    }
+}
+
 export const getUserDutiesFromGroup = async (req, res) => {
 
     const {user} = req
