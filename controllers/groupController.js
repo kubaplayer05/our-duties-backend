@@ -1,5 +1,6 @@
 import {PrismaClient} from '@prisma/client'
 import bcrypt from "bcrypt";
+import {verifyPassword} from "../utils/verify.js";
 
 const prisma = new PrismaClient()
 
@@ -40,6 +41,14 @@ export const createGroup = async (req, res) => {
     const {name, password} = req.body
 
     try {
+
+        const checkPassword = verifyPassword(password)
+
+        if (!checkPassword) {
+            return res.status(404).json({
+                error: "password not strong enough"
+            })
+        }
 
         const salt = await bcrypt.genSalt(10);
         const hash = await bcrypt.hash(password, salt);
@@ -104,7 +113,7 @@ export const joinGroup = async (req, res) => {
         const passwordCheck = await bcrypt.compare(password, hash)
 
         if (!passwordCheck) {
-            res.status(400).json({
+            return res.status(400).json({
                 error: "Wrong password"
             })
         }
